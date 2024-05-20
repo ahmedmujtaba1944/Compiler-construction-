@@ -1,0 +1,12 @@
+integer userAge = 9!
+integer ai = 9!
+line name = "uuy"!
+@ integer userAge = 0!
+showOut("Enter your Age")!
+getInput(userAge)!
+iff ( userAge >= 18 ) {
+    showOut("Yes!!, you are eligible for CNIC")!
+}
+then {
+    showOut("Sorry!!, you are not eligible for CNIC")!
+}

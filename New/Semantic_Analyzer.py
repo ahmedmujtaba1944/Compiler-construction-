@@ -1,198 +1,102 @@
 class SemanticAnalyzer:
-    def __init__(self, tokens):
+    def __init__(self, symbol_table, tokens):
+        self.symbol_table = symbol_table
         self.tokens = tokens
-        self.symbol_table = {}
-        self.errors = []
         self.current_token_index = 0
         self.current_token = self.tokens[self.current_token_index] if self.tokens else None
-
-    def advance(self):
-        self.current_token_index += 1
-        if self.current_token_index < len(self.tokens):
-            self.current_token = self.tokens[self.current_token_index]
-        else:
-            self.current_token = None
+        self.errors = []
 
     def analyze(self):
-        self.program()
+        self.check_variable_usage()
+        self.check_function_calls()
+        self.check_data_type()
+        self.check_type_compatibility()
 
-    def program(self):
-        self.statement_list()
+    def check_variable_usage(self):
+        for token_type, lexeme, line_number, *data_type in self.tokens:
+            if token_type == 'VARIABLE' and lexeme not in self.symbol_table:
+                self.errors.append(f"Semantic error: Variable '{lexeme}' used without declaration at line {line_number}")
 
-    def statement_list(self):
-        while self.current_token:
-            self.statement()
+    def check_function_calls(self):
+        for token_type, lexeme, line_number, *data_type in self.tokens:
+            if token_type == 'FUNCTION' and lexeme not in self.symbol_table:
+                self.errors.append(f"Semantic error: Function '{lexeme}' called without definition at line {line_number}")
 
-    def statement(self):
-        if self.current_token[0] == 'LCURLY':
-            self.block()
-        elif self.current_token[0] == 'RCURLY':
-            self.advance()
-        elif self.current_token[0] == 'DATA_TYPE':
-            self.declaration()
-        elif self.current_token[0] == 'KEYWORD':
-            if self.current_token[1] in ['iff', 'otherwise', 'then']:
-                self.conditional_statement()
-            elif self.current_token[1] in ['repeat', 'rotate']:
-                self.loop_statement()
-            elif self.current_token[1] == 'zero':
-                self.function_definition()
-            elif self.current_token[1] == 'stop' or self.current_token[1] == 'resume':
-                self.advance()
-                self.match('STATEMENT_END')
-        elif self.current_token[0] == 'FUNCTION':
-            self.function_call()
-            self.match('STATEMENT_END')
-        elif self.current_token[0] == 'VARIABLE':
-            self.assignment()
-        elif self.current_token == None:
-            pass
-        else:
-            self.errors.append(f"Semantic error: Unexpected token {self.current_token[1]} at line {self.current_token[2]}")
-            self.advance()
+    def check_data_type(self):
+        for lexeme, info in self.symbol_table.items():
+            if info['token_type'] == 'VARIABLE' and info['data_type'] != None and info['value'] != None:
+                if info['data_type'] == 'integer':
+                    if isinstance(int(info['value']), int):
+                        continue
+                    else:
+                        self.errors.append(f"Semantic error: Variable '{lexeme}' is of type {info['data_type']} but not assigned correctly at line {info['line_number']}")
+                elif info['data_type'] == 'decimal':
+                    if isinstance(float(info['value']), float):
+                        continue
+                    else:
+                        self.errors.append(f"Semantic error: Variable '{lexeme}' is of type {info['data_type']} but not assigned correctly at line {info['line_number']}")
+                elif info['data_type'] == 'line':
+                    if isinstance(info['value'], str):
+                        continue
+                    else:
+                        self.errors.append(f"Semantic error: Variable '{lexeme}' is of type {info['data_type']} but not assigned correctly at line {info['line_number']}")
+                elif info['data_type'] == 'flag':
+                    if info['value'] in ['yes', 'no']:
+                        continue
+                    else:
+                        self.errors.append(f"Semantic error: Variable '{lexeme}' is of type {info['data_type']} but not assigned correctly at line {info['line_number']}")
 
-    def declaration(self):
-        datatype = self.current_token[1]
-        self.match('DATA_TYPE')
-        var_name = self.current_token[1]
-        self.match('VARIABLE')
-        if var_name in self.symbol_table:
-            self.errors.append(f"Semantic error: Variable '{var_name}' already declared at line {self.current_token[2]}")
-        else:
-            self.symbol_table[var_name] = datatype
-
-        if self.current_token[0] == 'STATEMENT_END':
-            self.match('STATEMENT_END')
-        elif self.current_token[0] == 'ASSIGN':
-            self.match('ASSIGN')
-            self.expression()
-            self.match('STATEMENT_END')
-        else:
-            self.errors.append(f"Semantic error: Expected '!' or '=', found {self.current_token[1]} at line {self.current_token[2]}")
-
-    def assignment(self):
-        var_name = self.current_token[1]
-        if var_name not in self.symbol_table:
-            self.errors.append(f"Semantic error: Variable '{var_name}' not declared at line {self.current_token[2]}")
-        self.match('VARIABLE')
-        self.match('ASSIGN')
-        self.expression()
-        self.match('STATEMENT_END')
-
-    def expression(self):
-        if self.current_token[0] in ['LITERAL', 'CONSTANT', 'VARIABLE', 'OPERATOR']:
-            if self.current_token[0] == 'VARIABLE':
-                var_name = self.current_token[1]
-                if var_name not in self.symbol_table:
-                    self.errors.append(f"Semantic error: Variable '{var_name}' not declared at line {self.current_token[2]}")
-            self.match(self.current_token[0])
-        elif self.current_token[0] == 'FUNCTION':
-            self.function_call()
-        else:
-            self.errors.append(f"Semantic error: Unexpected token {self.current_token[1]} at line {self.current_token[2]}")
-            self.advance()
-
-    def conditional_statement(self):
-        if self.current_token[1] == 'iff':
-            self.match('KEYWORD')
-            self.condition()
-            self.block()
-        elif self.current_token[1] == 'otherwise':
-            self.match('KEYWORD')
-            self.condition()
-            self.block()
-        elif self.current_token[1] == 'then':
-            self.match('KEYWORD')
-            self.block()
-
-    def condition(self):
-        self.expression()
-        self.match('OPERATOR')
-        self.expression()
-
-    def loop_statement(self):
-        if self.current_token[1] == 'repeat':
-            self.match('KEYWORD')
-            self.match('LPAREN')
-            self.declaration()
-            self.condition()
-            self.match('STATEMENT_END')
-            self.loop_progression()
-            self.match('RPAREN')
-            self.block()
-        elif self.current_token[1] == 'rotate':
-            self.match('KEYWORD')
-            self.match('LPAREN')
-            self.condition()
-            self.match('RPAREN')
-            self.block()
-
-    def loop_progression(self):
-        if self.current_token[0] == 'VARIABLE':
-            self.match('VARIABLE')
-            self.match('OPERATOR')
-            if self.current_token[0] == 'VARIABLE':
-                self.match('VARIABLE')
-        elif self.current_token[0] == 'OPERATOR':
-            self.match('OPERATOR')
-            if self.current_token[0] == 'LITERAL':
-                self.match('LITERAL')
-            elif self.current_token[0] == 'VARIABLE':
-                self.match('VARIABLE')
-            else:
-                self.errors.append(f"Semantic error: Unexpected token {self.current_token[1]} at line {self.current_token[2]}")
-        else:
-            self.errors.append(f"Semantic error: Unexpected token {self.current_token[1]} at line {self.current_token[2]}")
-
-    def function_definition(self):
-        func_name = self.current_token[1]
-        if func_name in self.symbol_table:
-            self.errors.append(f"Semantic error: Function '{func_name}' already declared at line {self.current_token[2]}")
-        self.match('FUNCTION')
-        self.match('LPAREN')
-        self.argument_list()
-        self.match('RPAREN')
-        self.match('STATEMENT_END')
-        self.block()
-
-    def function_call(self):
-        func_name = self.current_token[1]
-        if func_name not in self.symbol_table:
-            self.errors.append(f"Semantic error: Function '{func_name}' not declared at line {self.current_token[2]}")
-        self.match('FUNCTION')
-        self.match('LPAREN')
-        self.argument_list()
-        self.match('RPAREN')
-
-    def argument_list(self):
-        while self.current_token and self.current_token[0] != 'RPAREN':
-            if self.current_token[0] == 'DATA_TYPE':
-                self.match(self.current_token[0])
-                if self.current_token[0] == 'VARIABLE':
-                    self.match('VARIABLE')
-                    if self.current_token[0] != 'RPAREN':
-                        self.match('SEPERATOR')
+    def check_type_compatibility(self):
+        operator_tokens = ['+', '-', '*', '/','%']
+        for i, (token_type, lexeme, line_number, *data_type) in enumerate(self.tokens):
+            if token_type == 'OPERATOR' and lexeme in operator_tokens:
+                if i == 0 or i == len(self.tokens) - 1:
+                    self.errors.append(f"Semantic error: Operator '{lexeme}' requires two operands at line {line_number}")
+                    continue
+                    
+                previous_token = self.tokens[i - 1]
+                next_token = self.tokens[i + 1]
+                if previous_token[0] not in ['VARIABLE','FUNCTION','LITERAL'] or next_token[0] not in ['VARIABLE','FUNCTION','LITERAL']:
+                    self.errors.append(f"Semantic error: Operator '{lexeme}' requires two variable operands at line {line_number}")
+                    continue
+                if previous_token[0] == 'LITERAL':
+                    try:
+                        float(previous_token[1])  # Attempt to convert to float
+                        previous_token_type = 'decimal'
+                    except ValueError:
+                        try:
+                            int(previous_token[1])  # Attempt to convert to int
+                            previous_token_type = 'integer'
+                        except ValueError:
+                            previous_token_type = None 
+                else: 
+                    left_operand_type = self.symbol_table[previous_token[1]]['data_type'] if self.symbol_table[previous_token[1]]['data_type'] else None
+                if next_token[0] == 'LITERAL':
+                    try:
+                        float(next_token[1])  # Attempt to convert to float
+                        next_token_type = float
+                    except ValueError:
+                        try:
+                            int(next_token[1])  # Attempt to convert to int
+                            next_token_type = int
+                        except ValueError:
+                            next_token_type = None
                 else:
-                    self.errors.append(f"Semantic error: Expected VARIABLE, found {self.current_token[1]} at line {self.current_token[2]}")
-            elif self.current_token[0] == 'VARIABLE':
-                self.match(self.current_token[0])
-            elif self.current_token[0] == 'LITERAL':
-                self.match(self.current_token[0])
-                if self.current_token[0] != 'RPAREN':
-                    self.match('SEPERATOR')
-            elif self.current_token[0] == 'CONSTANT':
-                self.match('CONSTANT')
-            else:
-                self.errors.append(f"Semantic error: Unexpected token {self.current_token[1]} at line {self.current_token[2]}")
-                self.advance()
+                    right_operand_type = self.symbol_table[next_token[1]]['data_type'] 
+                if left_operand_type is None or right_operand_type is None:
+                    self.errors.append(f"Semantic error: Type not defined at line {line_number}")
+                    continue
 
-    def block(self):
-        self.match('LCURLY')
-        self.statement_list()
-        self.match('RCURLY')
+                if left_operand_type in ['decimal', 'integer'] or right_operand_type in ['decimal', 'integer']:
+                    continue
+                else:
+                    self.errors.append(f"Semantic error: Operands must be integer or float types for arithmetic operations at line {line_number}")
+                    continue
+                
+                if lexeme in ['-', '/', '*', '%'] and left_operand_type in ['line','flag'] or right_operand_type in ['line','flag']:
+                    self.errors.append(f"Semantic error: Cannot perform these operations on line {line_number}")
+                    continue
 
-    def match(self, expected_token_type):
-        if self.current_token and self.current_token[0] == expected_token_type or self.current_token == None:
-            self.advance()
-        else:
-            self.errors.append(f"Semantic error: Expected {expected_token_type}, found {self.current_token[0] if self.current_token else 'EOF'} at line {self.current_token[2]}")
+                if left_operand_type != right_operand_type:
+                    self.errors.append(f"Semantic error: Type mismatch in expression at line {line_number}")
+

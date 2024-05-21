@@ -96,7 +96,6 @@ class Parser:
             if self.current_token == None:
                 self.errors.append('Syntax Error: Missing . at the end.')
 
-                # print('Syntax Error: Missing . at the end.')
             elif self.current_token[0] == 'STATEMENT_END':
                 self.match('STATEMENT_END')
             else:

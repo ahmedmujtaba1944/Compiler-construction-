@@ -1,6 +1,6 @@
-from lexical_Analyzer import tokenize
-from Syntax_Analyzer import Parser
-from Semantic_Analyzer import SemanticAnalyzer
+from LexicalAnalyzer import tokenize
+from SyntaxAnalyzer import Parser
+from SemanticAnalyzer import SemanticAnalyzer
 
 Errors = []
 # Function to build the symbol table

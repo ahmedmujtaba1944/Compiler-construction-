@@ -14,7 +14,7 @@ class Parser:
             self.current_token = None
 
     def match(self, expected_token_type):
-        if self.current_token and self.current_token[0] == expected_token_type:
+        if self.current_token and self.current_token[0] == expected_token_type or self.current_token == None:
             self.advance()
         else:
             self.errors.append(f"Syntax error: Expected {expected_token_type}, found {self.current_token[0] if self.current_token else 'EOF'} at line {self.current_token[2]}")
@@ -28,8 +28,9 @@ class Parser:
     def statement_list(self):
         while self.current_token:
             self.statement()
-        if self.current_token is None and len(self.block_stack) > 0:
-            self.errors.append(f"Syntax error: Missing '}}' of Block at line {self.block_stack[-1][1]}")
+        if self.current_token == None and len(self.block_stack) > 0:
+            er = '}'
+            self.errors.append(f"Syntax error: Missing {er} of Block at line {self.block_stack[-1][1]}")
 
     def statement(self):
         if self.current_token[0] == 'LCURLY':
@@ -45,7 +46,9 @@ class Parser:
                 self.conditional_statement()
             elif self.current_token[1] in ['repeat', 'rotate']:
                 self.loop_statement()
-            elif self.current_token[1] in ['stop', 'resume']:
+            elif self.current_token[1] == 'zero':
+                self.function_definition()
+            elif self.current_token[1] == 'stop' or self.current_token[1] == 'resume':
                 self.advance()
                 self.match('STATEMENT_END')
         elif self.current_token[0] == 'FUNCTION':
@@ -53,6 +56,8 @@ class Parser:
             self.match('STATEMENT_END')
         elif self.current_token[0] == 'VARIABLE':
             self.assignment()
+        elif self.current_token == None:
+            pass
         else:
             self.errors.append(f"Syntax error: Unexpected token {self.current_token[1]} at line {self.current_token[2]}")
             self.advance()
@@ -70,18 +75,25 @@ class Parser:
 
     def declaration(self):
         self.match('DATA_TYPE')
-        self.match('VARIABLE')
-        if self.current_token and self.current_token[0] == 'ASSIGN':
-            self.match('ASSIGN')
-            while self.current_token and self.current_token[0] != 'STATEMENT_END':
-                if self.expression():
-                    break
-        self.match('STATEMENT_END')
+        if self.current_token[0] == 'FUNCTION':
+            self.function_definition()
+        else:
+            self.match('VARIABLE')
+            if self.current_token == None:
+                self.errors.append('Syntax Error: Missing ! at the end.')
+            elif self.current_token[0] == 'STATEMENT_END':
+                self.match('STATEMENT_END')
+            else:
+                self.match('ASSIGN')
+                while self.current_token[0] != 'STATEMENT_END':
+                    if self.expression():
+                        break
+                self.match('STATEMENT_END')
 
     def assignment(self):
         self.match('VARIABLE')
         self.match('ASSIGN')
-        while self.current_token and self.current_token[0] != 'STATEMENT_END':
+        while self.current_token[0] != 'STATEMENT_END':
             if self.expression():
                 break
         self.match('STATEMENT_END')
@@ -154,22 +166,29 @@ class Parser:
                 self.match(self.current_token[0])
                 if self.current_token[0] != 'RPAREN':
                     self.match('SEPERATOR')
+            elif self.current_token[0] == 'CONSTANT':
+                self.match('CONSTANT')
             else:
                 self.errors.append(f"Syntax error: Unexpected token {self.current_token[1]} at line {self.current_token[2]}")
                 self.advance()
+
+    def function_definition(self):
+        self.match('FUNCTION')
+        self.match('LPAREN')
+        self.argument_list()
+        self.match('RPAREN')
+        self.match('STATEMENT_END')
+        self.block()
 
     def function_call(self):
         self.match('FUNCTION')
         self.match('LPAREN')
         self.argument_list()
         self.match('RPAREN')
+        self.match('STATEMENT_END')
 
     def block(self):
-        if self.current_token[0] == 'LCURLY':
-            self.block_stack.append(self.current_token)
         self.match('LCURLY')
-        while self.current_token and self.current_token[0] != 'RCURLY':
-            self.statement()
-        if self.current_token and self.current_token[0] == 'RCURLY':
-            self.block_stack.pop()
+        self.block_stack.append(self.current_token)
+        self.statement_list()
         self.match('RCURLY')

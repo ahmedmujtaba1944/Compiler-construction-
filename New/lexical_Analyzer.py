@@ -1,20 +1,20 @@
-
-
 import re
 
 # Define token types
 token_types = {
-    'KEYWORD': r'\b(?:iff|otherwise|then|repeat|rotate|stop|resume|showOut|blank|zero|getInput)\b',
+    'KEYWORD': r'\b(?:iff|otherwise|then|repeat|rotate|stop|resume|zero|showOut|getInput|blank)\b',
     'DATA_TYPE': r'\b(?:integer|decimal|line|flag|single)\b',
     'OPERATOR': r'(?:<=|>=|==|!=|\+\+|\-\-|\+|\-|\*|/|<|>|%)',
-    'IDENTIFIER': r'\b[a-zA-Z][a-zA-Z0-9]*\b',
+    'Identifier': r'\b[a-zA-Z][a-zA-Z0-9]*\b',
+    'PROCEDURE': r'\b(?:repeat|rotate)\b',
     'CONSTANT': r'(?:\".*?\"|\'.*?\')',
-    'LITERAL': r'\b(?:yes|no|\d+\.\d*|\d+|true|false)\b',
+    'LITERAL': r'\b(?:yes|no|true|false|\d+\.\d*|\d+)\b',
     'ASSIGN': r'=',
     'LCURLY': r'{',
     'RCURLY': r'}',
     'LPAREN': r'\(',
     'RPAREN': r'\)',
+    'SEPERATOR': r'\,',
     'STATEMENT_END': r'!',
 }
 
@@ -36,27 +36,24 @@ def tokenize(code):
                 match = re.match(pattern, line[position:])
                 if match:
                     token = match.group(0)
-                    if token_type == 'IDENTIFIER':
-                        if token in token_types['KEYWORD'].split('|'):
-                            token_type = 'KEYWORD'
+                    if token_type == 'Identifier':
+                        prev_token_index = len(tokens) - 1
+                        data_type = None  # Default to None
+                        if prev_token_index >= 0 and tokens[prev_token_index][0] == 'DATA_TYPE' or tokens[prev_token_index][1] == 'zero':
+                            data_type = tokens[prev_token_index][1]
+                        while position + len(token) < len(line) and line[position + len(token)].isspace():
+                            position += 1
+                        if position + len(token) < len(line) and line[position + len(token)] == '(':
+                            tokens.append(('FUNCTION', token, line_number, data_type))
                         else:
-                            prev_token_index = len(tokens) - 1
-                            data_type = None  # Default to None
-                            if prev_token_index >= 0 and tokens[prev_token_index][0] == 'DATA_TYPE':
-                                data_type = tokens[prev_token_index][1]
-                            while position + len(token) < len(line) and line[position + len(token)].isspace():
-                                position += 1
-                            if position + len(token) < len(line) and line[position + len(token)] == '(':
-                                tokens.append(('FUNCTION', token, line_number, data_type))
-                            else:
-                                tokens.append(('VARIABLE', token, line_number, data_type))
+                            tokens.append(('VARIABLE', token, line_number, data_type))
                     else:
                         tokens.append((token_type, token, line_number))
                     position += len(token)
                     break
             if not match:
                 Errors.append(f"Lexical error: Unexpected character '{line[position]}' on line {line_number}")
+                print(f"Lexical error: Unexpected character '{line[position]}' on line {line_number}")
                 position += 1
+
     return tokens, Errors
-
-

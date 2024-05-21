@@ -1,7 +1,11 @@
-integer$age = 10!
-iff $age >= 18 {
-    show("you are eligible")!
+integer $my_age = 10!
+line $show_out = ""!
+iif $my_age > 18{
+   $show_out = "you are eligible for CNIC"!
 }
-otherwise {
-    show("you are not eligible")!
+otherwise $my_age > 60{
+   $show_out = "you are 60 plus"!
+}
+then {
+   $show_out = "you are not eligible"!
 }

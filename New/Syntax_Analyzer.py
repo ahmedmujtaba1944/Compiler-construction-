@@ -94,7 +94,7 @@ class Parser:
         else:
             self.match('VARIABLE')
             if self.current_token == None:
-                self.errors.append('Syntax Error: Missing . at the end.')
+                self.errors.append('Syntax Error: Missing ! at the end.')
 
             elif self.current_token[0] == 'STATEMENT_END':
                 self.match('STATEMENT_END')

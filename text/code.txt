@@ -1,5 +1,4 @@
 integer userAge!
-interger  nmae = 'a'!
 showOut("Enter your Age")!
 getInput(userAge)
 iff ( userAge >= 18 ) {

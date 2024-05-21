@@ -44,14 +44,12 @@ class Parser:
         elif self.current_token[0] == 'KEYWORD':
             if self.current_token[1] in ['iff', 'otherwise', 'then']:
                 self.conditional_statement()
-            elif self.current_token[1] in ['repeat', 'rotate']:
-                self.loop_statement()
-            elif self.current_token[1] == 'zero':
-                self.function_definition()
-            elif self.current_token[1] == 'stop' or self.current_token[1] == 'resume':
+            elif self.current_token[1] in ['rotate', 'repeat']:
+                self.iterative_statement()
+            elif self.current_token[1] == 'blank':
                 self.advance()
                 self.match('STATEMENT_END')
-        elif self.current_token[0] == 'FUNCTION':
+        elif self.current_token[0] == 'FUNCTION':            
             self.function_call()
             self.match('STATEMENT_END')
         elif self.current_token[0] == 'VARIABLE':
@@ -61,6 +59,10 @@ class Parser:
         else:
             self.errors.append(f"Syntax error: Unexpected token {self.current_token[1]} at line {self.current_token[2]}")
             self.advance()
+            # Add check for missing statement terminator
+            if self.current_token[0] != 'STATEMENT_END':
+                self.errors.append(f"Syntax error: Missing statement terminator '!' at line {self.current_token[2]}")
+
 
     def expression(self):
         if self.current_token[0] in ['LITERAL', 'CONSTANT', 'VARIABLE', 'OPERATOR']:

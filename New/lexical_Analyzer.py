@@ -6,16 +6,16 @@ token_types = {
     'DATA_TYPE': r'\b(?:integer|decimal|line|flag|single)\b',
     'OPERATOR': r'(?:<=|>=|==|!=|\+\+|\-\-|\+|\-|\*|/|<|>|%)',
     'Identifier': r'$[_a-zA-Z][_a-zA-Z0-9]*',
-    'PROCEDURE': r'\b(?:FR|WH)\b',
+    'PROCEDURE': r'\b(?:repeat|rotate)\b',
     'CONSTANT': r'(?:\".*?\"|\'.*?\')',
-    'LITERAL': r'\b(?:true|false|\d+\.\d*|\d+)\b',
+    'LITERAL': r'\b(?:yes|no|\d+\.\d*|\d+)\b',
     'ASSIGN': r'=',
     'LCURLY': r'{',
     'RCURLY': r'}',
     'LPAREN': r'\(',
     'RPAREN': r'\)',
     'SEPERATOR': r'\,',
-    'STATEMENT_END': r'\.',
+    'STATEMENT_END': r'\!',
 }
 
 

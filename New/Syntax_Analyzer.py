@@ -54,11 +54,11 @@ class Parser:
         elif self.current_token[0] == 'KEYWORD':
             if self.current_token[1] in ['iif', 'otherwise', 'then']:
                 self.conditional_statement()
-            elif self.current_token[1] in ['repeat', 'totate']:
+            elif self.current_token[1] in ['repeat', 'rotate']:
                 self.loop_statement()
-            elif self.current_token[1] == 'Zero':
+            elif self.current_token[1] == 'Blank':
                 self.function_definition()
-            elif self.current_token[1] == 'cnt' or self.current_token[1] == 'br':
+            elif self.current_token[1] == 'resume' or self.current_token[1] == 'stop':
                 self.advance()
                 self.match('STATEMENT_END')
         elif self.current_token[0] == 'FUNCTION':            
@@ -66,14 +66,11 @@ class Parser:
             self.match('STATEMENT_END')
         elif self.current_token[0] == 'VARIABLE':
             self.assignment()
-        # elif self.current_token == 'END':
-        #         print('No Syntax Error were found')
-        #         
+            
         elif self.current_token == None:
                 pass
         else:
             self.errors.append(f"Syntax error: Unexpected token {self.current_token[1]} at line {self.current_token[2]}")
-            # print(f"Syntax error: Unexpected token {self.current_token[1]} at line {self.current_token[2]}")
             self.advance()
             
 
@@ -86,9 +83,6 @@ class Parser:
             return True
         else:
             self.errors.append(f"Syntax error: Unexpected token {self.current_token[1]} at line {self.current_token[2]}")
-
-            # print(f"Syntax error: Unexpected token {self.current_token[1]} at line {self.current_token[2]}")
-            #self.advance()
             return True
             
     
@@ -130,11 +124,11 @@ class Parser:
             self.match('KEYWORD')
             self.condition()
             self.block()
-        elif self.current_token[1] == 'ielif':
+        elif self.current_token[1] == 'otherwise':
                 self.match('KEYWORD')
                 self.condition()
                 self.block()
-        elif self.current_token[1] == 'ielse':
+        elif self.current_token[1] == 'then':
                 self.match('KEYWORD')
                 self.block()
 
@@ -163,7 +157,7 @@ class Parser:
             
 
     def loop_statement(self):
-        if self.current_token[1] == 'FR':
+        if self.current_token[1] == 'repeat':
             self.match('KEYWORD')
             self.match('LPAREN')
             self.declaration()
@@ -172,7 +166,7 @@ class Parser:
             self.loop_progression()
             self.match('RPAREN')
             self.block()
-        elif self.current_token[1] == 'WH':
+        elif self.current_token[1] == 'rotate':
             self.match('KEYWORD')
             self.match('LPAREN')
             self.condition()
@@ -223,7 +217,7 @@ class Parser:
                     break
         
     def function_definition(self):
-        if self.current_token[1] == 'Zero':
+        if self.current_token[1] == 'Blank':
             self.match('KEYWORD')
         else:
             self.match('DATA_TYPE')

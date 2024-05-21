@@ -2,46 +2,94 @@ from lexical_Analyzer import tokenize
 from Syntax_Analyzer import Parser
 from Semantic_Analyzer import SemanticAnalyzer
 
-def main():
-    # Path to the code file
-    file_path = r'G:\University_Study\8th Semester\Compiler-construction\cc-project\Compiler-construction-\New\code.txt'
-    
-    # Read the code from the file
-    with open(file_path, 'r') as file:
+Errors = []
+# Function to build the symbol table
+def build_symbol_table(tokens):
+    symbol_table = {}
+    current_data_type = None
+    current_name = None
+    for token_type, lexeme, line_number, *data_type in tokens:
+        
+        current_data_type = data_type[0] if data_type else None
+        if token_type == 'VARIABLE':
+            current_name = lexeme
+            if current_name in symbol_table or current_data_type == None:
+                current_name = None
+                # print(f"Error: Duplicate variable name '{current_name}' on line {line_number}")
+                continue
+            symbol_table[current_name] = {
+                'token_type': 'VARIABLE',
+                'data_type': current_data_type,
+                'line_number': line_number,
+                'value': None  
+            }
+        elif token_type == 'LITERAL' or token_type == 'CONSTANT':
+            if current_name is None:
+                # print(f"Error: Literal '{lexeme}' found without a preceding variable declaration on line {line_number}")
+                continue
+            
+            if symbol_table[current_name]['token_type'] == 'VARIABLE':
+                symbol_table[current_name]['value'] = lexeme
+            current_name = None  # Reset current_name after assigning value
+        elif token_type == 'FUNCTION':
+            current_name = lexeme
+            if current_name in symbol_table:
+                # print(f"Error: Duplicate function name '{current_name}' on line {line_number}")
+                continue
+            data_type = data_type[0] if data_type else None
+            if data_type != None:
+                symbol_table[current_name] = {
+                    'token_type': 'FUNCTION',
+                    'data_type': data_type,
+                    'line_number': line_number,
+                    'value': None  
+                }   
+
+    return symbol_table
+
+
+
+# Read code from a file
+ 
+def read_code_from_file(filename):
+    filename = r'G:\University_Study\8th Semester\Compiler-construction\cc-project\Compiler-construction-\New\code.txt'
+    with open(filename, 'r') as file:
         code = file.read()
+    return code
 
-    # Perform lexical analysis
-    tokens, lexical_errors = tokenize(code)
 
-    # Display lexical errors, if any
-    if lexical_errors:
-        for error in lexical_errors:
-            print(error)
-    else:
-        print("Lexical Analysis successful!")
-        print(tokens)
 
-        # Parse the tokens
-        parser = Parser(tokens)
-        parser.parse()
+code = read_code_from_file('code.txt')
 
-        # Display syntax errors, if any
-        if parser.errors:
-            for error in parser.errors:
-                print(error)
-        else:
-            print("Syntax Analysis successful!")
+# Tokenize the code
+tokens, error = tokenize(code)
 
-            # Perform semantic analysis
-            semantic_analyzer = SemanticAnalyzer(tokens)
-            semantic_errors = semantic_analyzer.analyze()
+Errors.extend(error)
 
-            # Display semantic errors, if any
-            if semantic_errors:
-                for error in semantic_errors:
-                    print(error)
-            else:
-                print("Semantic Analysis successful!")
+# print("Tokens:-")
+# for i in tokens:
+#     print(i)
 
-if __name__ == "__main__":
-    main()
+# Build the symbol table
+symbol_table = build_symbol_table(tokens)
+
+      
+# print("Symbol Table:")
+# for lexeme, info in symbol_table.items():
+#     print(f"{lexeme}: {info}")
+
+parser = Parser(tokens)
+# print('\nParsing ....\n')
+# Parse the code
+parser.parse()
+Errors.extend(parser.errors)
+
+semantic = SemanticAnalyzer(symbol_table, tokens)
+semantic.analyze()
+Errors.extend(semantic.errors)
+
+if Errors:
+    for i in Errors:
+        print(i)
+else:
+    print('No Errors were found')

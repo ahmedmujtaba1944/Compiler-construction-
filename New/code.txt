@@ -1,7 +1,7 @@
 integer userAge!
-interger  nmae = 'a'!
-showOut("Enter your Age")!
-getInput(userAge)
+integer  name = 'a'!
+show("Enter your Age")!
+get(userAge)!
 iff ( userAge >= 18 ) {
     showOut("yes!!, you are eligible for CNIC")!
 }

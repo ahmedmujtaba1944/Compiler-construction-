@@ -9,3 +9,9 @@ otherwise $my_age > 60{
 then {
    $show_out = "you are not eligible"!
 }
+
+
+repeat(integer $i = 0! $i <= 10! $i++)
+{
+    $show_out = "CC"!
+}

@@ -1,0 +1,68 @@
+
+
+
+
+
+
+
+
+import re
+
+# Define token types
+token_types = {
+    'KEYWORD': r'\b(?:iff|otherwise|then|repeat|rotate|stop|resume|showOut|blank|zero|getInput)\b',
+    'DATA_TYPE': r'\b(?:integer|decimal|line|flag|single)\b',
+    'OPERATOR': r'(?:<=|>=|==|!=|\+\+|\-\-|\+|\-|\*|/|<|>|%)',
+    'IDENTIFIER': r'\b[a-zA-Z][a-zA-Z0-9]*\b',
+    'CONSTANT': r'(?:\".*?\"|\'.*?\')',
+    'LITERAL': r'\b(?:yes|no|\d+\.\d*|\d+|true|false)\b',
+    'ASSIGN': r'=',
+    'LCURLY': r'{',
+    'RCURLY': r'}',
+    'LPAREN': r'\(',
+    'RPAREN': r'\)',
+    'STATEMENT_END': r'!',
+}
+
+# Create regular expressions for tokenization
+patterns = {token: re.compile(pattern) for token, pattern in token_types.items()}
+
+def tokenize(code):
+    Errors = []
+    tokens = []
+    lines = code.split('\n')
+    for line_number, line in enumerate(lines, start=1):
+        position = 0
+        while position < len(line):
+            if line[position].isspace():  # Skip whitespace
+                position += 1
+                continue
+            match = None
+            for token_type, pattern in token_types.items():
+                match = re.match(pattern, line[position:])
+                if match:
+                    token = match.group(0)
+                    if token_type == 'IDENTIFIER':
+                        if token in token_types['KEYWORD'].split('|'):
+                            token_type = 'KEYWORD'
+                        else:
+                            prev_token_index = len(tokens) - 1
+                            data_type = None  # Default to None
+                            if prev_token_index >= 0 and tokens[prev_token_index][0] == 'DATA_TYPE':
+                                data_type = tokens[prev_token_index][1]
+                            while position + len(token) < len(line) and line[position + len(token)].isspace():
+                                position += 1
+                            if position + len(token) < len(line) and line[position + len(token)] == '(':
+                                tokens.append(('FUNCTION', token, line_number, data_type))
+                            else:
+                                tokens.append(('VARIABLE', token, line_number, data_type))
+                    else:
+                        tokens.append((token_type, token, line_number))
+                    position += len(token)
+                    break
+            if not match:
+                Errors.append(f"Lexical error: Unexpected character '{line[position]}' on line {line_number}")
+                position += 1
+    return tokens, Errors
+
+

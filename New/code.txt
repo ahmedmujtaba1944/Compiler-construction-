@@ -1,10 +1,7 @@
-integer userAge!
-integer  name = 'a'!
-show("Enter your Age")!
-get(userAge)!
-iff ( userAge >= 18 ) {
-    showOut("yes!!, you are eligible for CNIC")!
+integer$age = 10!
+iff $age >= 18 {
+    show("you are eligible")!
 }
-then {
-    showOut("Sorry!!, you are not eligible for CNIC")!
+otherwise {
+    show("you are not eligible")!
 }

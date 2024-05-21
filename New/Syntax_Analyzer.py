@@ -1,3 +1,4 @@
+import sys
 class Parser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -18,19 +19,25 @@ class Parser:
             self.advance()
         else:
             self.errors.append(f"Syntax error: Expected {expected_token_type}, found {self.current_token[0] if self.current_token else 'EOF'} at line {self.current_token[2]}")
+            # print(f"Syntax error: Expected {expected_token_type}, found {self.current_token[0] if self.current_token else 'EOF'} at line {self.current_token[2]}")
+            
 
     def parse(self):
         self.program()
+        
 
     def program(self):
         self.statement_list()
-
+        
     def statement_list(self):
         while self.current_token:
             self.statement()
         if self.current_token == None and len(self.block_stack) > 0:
-            er = '}'
-            self.errors.append(f"Syntax error: Missing {er} of Block at line {self.block_stack[-1][1]}")
+                er = '}'
+                self.errors.append(f"Syntax error: Missing {er} of Block at line {self.block_stack[-1][1]}")
+                # print(f"Syntax error: Missing {er} of Block at line {self.block_stack[-1][1]}")
+                
+        
 
     def statement(self):
         if self.current_token[0] == 'LCURLY':
@@ -38,15 +45,20 @@ class Parser:
         elif self.current_token[0] == 'RCURLY':
             if self.block_stack:
                 self.block_stack.pop()
-            self.advance()
+                # return
+            # else:
+            #     print(f"Syntax error: Unexpected token {self.current_token[1]} at line {self.current_token[2]}")
+                self.advance()
         elif self.current_token[0] == 'DATA_TYPE':
             self.declaration()
         elif self.current_token[0] == 'KEYWORD':
-            if self.current_token[1] in ['iff', 'otherwise', 'then']:
+            if self.current_token[1] in ['iif', 'otherwise', 'then']:
                 self.conditional_statement()
-            elif self.current_token[1] in ['rotate', 'repeat']:
-                self.iterative_statement()
-            elif self.current_token[1] == 'blank':
+            elif self.current_token[1] in ['repeat', 'totate']:
+                self.loop_statement()
+            elif self.current_token[1] == 'Zero':
+                self.function_definition()
+            elif self.current_token[1] == 'cnt' or self.current_token[1] == 'br':
                 self.advance()
                 self.match('STATEMENT_END')
         elif self.current_token[0] == 'FUNCTION':            
@@ -54,15 +66,16 @@ class Parser:
             self.match('STATEMENT_END')
         elif self.current_token[0] == 'VARIABLE':
             self.assignment()
+        # elif self.current_token == 'END':
+        #         print('No Syntax Error were found')
+        #         
         elif self.current_token == None:
-            pass
+                pass
         else:
             self.errors.append(f"Syntax error: Unexpected token {self.current_token[1]} at line {self.current_token[2]}")
+            # print(f"Syntax error: Unexpected token {self.current_token[1]} at line {self.current_token[2]}")
             self.advance()
-            # Add check for missing statement terminator
-            if self.current_token[0] != 'STATEMENT_END':
-                self.errors.append(f"Syntax error: Missing statement terminator '!' at line {self.current_token[2]}")
-
+            
 
     def expression(self):
         if self.current_token[0] in ['LITERAL', 'CONSTANT', 'VARIABLE', 'OPERATOR']:
@@ -73,16 +86,23 @@ class Parser:
             return True
         else:
             self.errors.append(f"Syntax error: Unexpected token {self.current_token[1]} at line {self.current_token[2]}")
+
+            # print(f"Syntax error: Unexpected token {self.current_token[1]} at line {self.current_token[2]}")
+            #self.advance()
             return True
+            
+    
 
     def declaration(self):
         self.match('DATA_TYPE')
         if self.current_token[0] == 'FUNCTION':
-            self.function_definition()
+                self.function_definition()
         else:
             self.match('VARIABLE')
             if self.current_token == None:
-                self.errors.append('Syntax Error: Missing ! at the end.')
+                self.errors.append('Syntax Error: Missing . at the end.')
+
+                # print('Syntax Error: Missing . at the end.')
             elif self.current_token[0] == 'STATEMENT_END':
                 self.match('STATEMENT_END')
             else:
@@ -99,44 +119,51 @@ class Parser:
             if self.expression():
                 break
         self.match('STATEMENT_END')
-
+        
     def condition(self):
         self.expression()
         self.match('OPERATOR')
         self.expression()
 
     def conditional_statement(self):
-        if self.current_token[1] == 'iff':
+        if self.current_token[1] == 'iif':
             self.match('KEYWORD')
             self.condition()
             self.block()
-        elif self.current_token[1] == 'otherwise':
-            self.match('KEYWORD')
-            self.condition()
-            self.block()
-        elif self.current_token[1] == 'then':
-            self.match('KEYWORD')
-            self.block()
+        elif self.current_token[1] == 'ielif':
+                self.match('KEYWORD')
+                self.condition()
+                self.block()
+        elif self.current_token[1] == 'ielse':
+                self.match('KEYWORD')
+                self.block()
 
     def loop_progression(self):
         if self.current_token[0] == 'VARIABLE':
-            self.match('VARIABLE')
+            self.match('VARIABLE') 
             self.match('OPERATOR')
             if self.current_token[0] == 'VARIABLE':
-                self.match('VARIABLE')
+                self.match('VARIABLE') 
         elif self.current_token[0] == 'OPERATOR':
-            self.match('OPERATOR')
+            self.match('OPERATOR')  
             if self.current_token[0] == 'LITERAL':
-                self.match('LITERAL')
+                self.match('LITERAL')  
             elif self.current_token[0] == 'VARIABLE':
-                self.match('VARIABLE')
+                self.match('VARIABLE')  
             else:
-                self.errors.append(f"Syntax error: Unexpected token {self.current_token[1]} at line {self.current_token[2]}")
+                
+                print(f"Syntax error: Unexpected token {self.current_token[1]} at line {self.current_token[2]}")
+                
+                # self.advance()
+                
         else:
-            self.errors.append(f"Syntax error: Unexpected token {self.current_token[1]} at line {self.current_token[2]}")
+            print(f"Syntax error: Unexpected token {self.current_token[1]} at line {self.current_token[2]}")
+            # self.advance()
+            
+            
 
     def loop_statement(self):
-        if self.current_token[1] == 'repeat':
+        if self.current_token[1] == 'FR':
             self.match('KEYWORD')
             self.match('LPAREN')
             self.declaration()
@@ -145,14 +172,14 @@ class Parser:
             self.loop_progression()
             self.match('RPAREN')
             self.block()
-        elif self.current_token[1] == 'rotate':
+        elif self.current_token[1] == 'WH':
             self.match('KEYWORD')
             self.match('LPAREN')
             self.condition()
             self.match('RPAREN')
             self.block()
 
-    def argument_list(self):
+    def argument_list(self):  
         while self.current_token and self.current_token[0] != 'RPAREN':
             if self.current_token[0] == 'DATA_TYPE':
                 self.match(self.current_token[0])
@@ -161,36 +188,60 @@ class Parser:
                     if self.current_token[0] != 'RPAREN':
                         self.match('SEPERATOR')
                 else:
-                    self.errors.append(f"Syntax error: Expected VARIABLE, found {self.current_token[1]} at line {self.current_token[2]}")
+                    print(f"Syntax error: Expected VARIABLE, found {self.current_token[1]} at line {self.current_token[2]}")
+                    # self.advance()
+                    
             elif self.current_token[0] == 'VARIABLE':
                 self.match(self.current_token[0])
             elif self.current_token[0] == 'LITERAL':
                 self.match(self.current_token[0])
                 if self.current_token[0] != 'RPAREN':
-                    self.match('SEPERATOR')
-            elif self.current_token[0] == 'CONSTANT':
-                self.match('CONSTANT')
-            else:
-                self.errors.append(f"Syntax error: Unexpected token {self.current_token[1]} at line {self.current_token[2]}")
-                self.advance()
+                        self.match('SEPERATOR')
 
-    def function_definition(self):
-        self.match('FUNCTION')
-        self.match('LPAREN')
-        self.argument_list()
-        self.match('RPAREN')
-        self.match('STATEMENT_END')
-        self.block()
+            else:
+                print(f"Syntax error: Unexpected token {self.current_token[1]} at line {self.current_token[2]}")
+                self.advance()
+                
+
+        if self.current_token and self.current_token[0] == 'RPAREN':
+            self.match('RPAREN')
+            if self.current_token == 'None':
+                print(f'Syntax error: Value Missing At Last Line')
+                return True
+        else:
+            print(f"Syntax error: Expected RPAREN ")
+        return True
 
     def function_call(self):
         self.match('FUNCTION')
         self.match('LPAREN')
-        self.argument_list()
-        self.match('RPAREN')
-        self.match('STATEMENT_END')
+        if self.current_token[0] == 'RPAREN':
+            self.match('RPAREN')
+        else:
+            while self.current_token[0] != 'RPAREN':
+                if self.argument_list():
+                    break
+        
+    def function_definition(self):
+        if self.current_token[1] == 'Zero':
+            self.match('KEYWORD')
+        else:
+            self.match('DATA_TYPE')
+        self.match('FUNCTION')
+        self.match('LPAREN')
+        while self.current_token[0] != 'RPAREN':
+            if self.argument_list():
+                break
+        self.block()
+        self.match('RCURLY')
 
     def block(self):
+        if self.current_token == None:
+            return
+        self.block_stack.append(('BLOCK', self.current_token[2]))
+        
         self.match('LCURLY')
-        self.block_stack.append(self.current_token)
         self.statement_list()
-        self.match('RCURLY')
+        
+
+

@@ -2,21 +2,22 @@ import re
 
 # Define token types
 token_types = {
-    'KEYWORD': r'\b(?:iff|otherwise|then|repeat|rotate|stop|resume|zero|showOut|getInput|null)\b',
+    'KEYWORD': r'\b(?:iif|otherwise|then|repeat|rotate|Blank|resume|stop|null)\b',
     'DATA_TYPE': r'\b(?:integer|decimal|line|flag|single)\b',
     'OPERATOR': r'(?:<=|>=|==|!=|\+\+|\-\-|\+|\-|\*|/|<|>|%)',
-    'Identifier': r'\b[a-zA-Z][a-zA-Z0-9]*\b',
-    'PROCEDURE': r'\b(?:repeat|rotate)\b',
+    'Identifier': r'$[_a-zA-Z][_a-zA-Z0-9]*',
+    'PROCEDURE': r'\b(?:FR|WH)\b',
     'CONSTANT': r'(?:\".*?\"|\'.*?\')',
-    'LITERAL': r'\b(?:yes|no|true|false|\d+\.\d*|\d+)\b',
+    'LITERAL': r'\b(?:true|false|\d+\.\d*|\d+)\b',
     'ASSIGN': r'=',
     'LCURLY': r'{',
     'RCURLY': r'}',
     'LPAREN': r'\(',
     'RPAREN': r'\)',
     'SEPERATOR': r'\,',
-    'STATEMENT_END': r'!',
+    'STATEMENT_END': r'\.',
 }
+
 
 # Create regular expressions for tokenization
 patterns = {token: re.compile(pattern) for token, pattern in token_types.items()}
@@ -39,7 +40,7 @@ def tokenize(code):
                     if token_type == 'Identifier':
                         prev_token_index = len(tokens) - 1
                         data_type = None  # Default to None
-                        if prev_token_index >= 0 and tokens[prev_token_index][0] == 'DATA_TYPE' or tokens[prev_token_index][1] == 'zero':
+                        if prev_token_index >= 0 and tokens[prev_token_index][0] == 'DATA_TYPE' or tokens[prev_token_index][1] == 'Blank':
                             data_type = tokens[prev_token_index][1]
                         while position + len(token) < len(line) and line[position + len(token)].isspace():
                             position += 1
@@ -57,3 +58,5 @@ def tokenize(code):
                 position += 1
 
     return tokens, Errors
+
+

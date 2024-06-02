@@ -4,21 +4,9 @@ iif my_age > 18{
    show_out = "you are eligible for CNIC"!
 }
 otherwise my_age > 60{
-   show_out = "you are 60 plus"
+   show_out = "you are 60 plus"!
 }
 then {
    show_out = "you are not eligible"!
 }
 
-
-repeat(integer i = 0! i <= 10! i++)
-{
-    show_out = "CC"!
-}
-
-line uni_name = "riphah International University" 
-integer i = 0!
-rotate(i >= 20){
-   uni_name!
-   i = i + 1!
-}

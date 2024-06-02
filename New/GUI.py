@@ -124,6 +124,139 @@
 #     root = tk.Tk()
 #     app = CodeAnalyzerApp(root)
 #     root.mainloop()
+
+
+
+
+# ============================================================================================
+
+
+# import tkinter as tk
+# from tkinter import scrolledtext, ttk, messagebox
+# from ttkthemes import ThemedTk
+# from LexicalAnalyzer import tokenize
+# from SyntaxAnalyzer import Parser
+# from SemanticAnalyzer import SemanticAnalyzer
+# from AllMain import build_symbol_table
+# from CodeGenerator import CodeGenerator
+
+# class CodeAnalyzerApp:
+#     def __init__(self, root):
+#         self.root = root
+#         self.root.title("AA Language")
+
+#         # Apply a light theme
+#         self.root.set_theme('clearlooks')
+
+#         # Create a PanedWindow to hold sidebar and main content
+#         self.paned_window = tk.PanedWindow(self.root, orient=tk.HORIZONTAL)
+#         self.paned_window.pack(fill=tk.BOTH, expand=True)
+
+#         # Create sidebar frame
+#         self.sidebar_frame = ttk.Frame(self.paned_window, padding="10 10 10 10")
+#         self.paned_window.add(self.sidebar_frame)
+
+#         # Create main content frame
+#         self.main_frame = ttk.Frame(self.paned_window, padding="10 10 10 10")
+#         self.paned_window.add(self.main_frame)
+
+#         # Sidebar buttons
+#         self.run_button = ttk.Button(self.sidebar_frame, text="Run code", command=self.run_analysis)
+#         self.run_button.pack(pady=5, fill=tk.X)
+
+#         self.tokens_button = ttk.Button(self.sidebar_frame, text="Tokens", command=self.show_tokens)
+#         self.tokens_button.pack(pady=5, fill=tk.X)
+
+#         self.symbol_table_button = ttk.Button(self.sidebar_frame, text="Symbol Table", command=self.show_symbol_table)
+#         self.symbol_table_button.pack(pady=5, fill=tk.X)
+
+#         # Code editor label and text widget
+#         self.code_editor_label = ttk.Label(self.main_frame, text="Write Code")
+#         self.code_editor_label.pack(anchor='w', pady=5)
+
+#         self.code_editor = scrolledtext.ScrolledText(self.main_frame, wrap=tk.WORD, width=80, height=20, background='#ffffff', foreground='#000000', insertbackground='black')
+#         self.code_editor.pack(fill=tk.BOTH, expand=True, pady=5)
+
+#         # Results display label and text widget
+#         self.results_display_label = ttk.Label(self.main_frame, text="Output")
+#         self.results_display_label.pack(anchor='w', pady=5)
+
+#         self.results_display = scrolledtext.ScrolledText(self.main_frame, wrap=tk.WORD, width=40, height=10, background='#ffffff', foreground='#000000', insertbackground='black')
+#         self.results_display.pack(fill=tk.BOTH, expand=True, pady=5)
+
+#     def run_analysis(self):
+#         code = self.code_editor.get("1.0", tk.END).strip()
+#         if not code:
+#             messagebox.showwarning("Input Error", "Code editor is empty. Please enter some code.")
+#             return
+        
+#         tokens, errors = tokenize(code)
+#         symbol_table = build_symbol_table(tokens)
+        
+#         parser = Parser(tokens)
+#         parser.parse()
+#         errors.extend(parser.errors)
+        
+#         semantic = SemanticAnalyzer(symbol_table, tokens)
+#         semantic.analyze()
+#         errors.extend(semantic.errors)
+
+#         self.results_display.delete("1.0", tk.END)
+#         if errors:
+#             self.results_display.config(foreground='red')
+#             for error in errors:
+#                 self.results_display.insert(tk.END, error + '\n')
+#         else:
+#             self.results_display.config(foreground='green')
+#             code_generator = CodeGenerator(symbol_table, tokens)
+#             assembly_code = code_generator.generate()
+#             self.results_display.insert(tk.END, assembly_code)
+
+#     def show_tokens(self):
+#         code = self.code_editor.get("1.0", tk.END).strip()
+#         if not code:
+#             messagebox.showwarning("Input Error", "Code editor is empty. Please enter some code.")
+#             return
+
+#         tokens, errors = tokenize(code)
+#         tokens_str = "\n".join([f"{token}" for token in tokens])
+
+#         token_window = tk.Toplevel(self.root)
+#         token_window.title("Tokens")
+#         token_text = scrolledtext.ScrolledText(token_window, wrap=tk.WORD, width=80, height=30, background='#ffffff', foreground='#000000', insertbackground='black')
+#         token_text.pack(padx=10, pady=10)
+#         token_text.insert(tk.END, tokens_str)
+
+#     def show_symbol_table(self):
+#         code = self.code_editor.get("1.0", tk.END).strip()
+#         if not code:
+#             messagebox.showwarning("Input Error", "Code editor is empty. Please enter some code.")
+#             return
+
+#         tokens, errors = tokenize(code)
+#         symbol_table = build_symbol_table(tokens)
+
+#         symbol_table_window = tk.Toplevel(self.root)
+#         symbol_table_window.title("A Language Symbol Table window")
+#         columns = ('Lexeme', 'Token Type', 'Data Type', 'Line Number', 'Value')
+#         tree = ttk.Treeview(symbol_table_window, columns=columns, show='headings')
+#         for col in columns:
+#             tree.heading(col, text=col)
+#             tree.column(col, anchor='center', width=100)
+
+#         for lexeme, info in symbol_table.items():
+#             tree.insert('', tk.END, values=(lexeme, info['token_type'], info['data_type'], info['line_number'], info['value']))
+
+#         tree.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
+
+# if __name__ == "__main__":
+#     root = ThemedTk(theme="clearlooks")
+#     app = CodeAnalyzerApp(root)
+#     root.mainloop()
+
+
+# =======================================================================================
+
 import tkinter as tk
 from tkinter import scrolledtext, ttk, messagebox
 from ttkthemes import ThemedTk
@@ -136,45 +269,57 @@ from CodeGenerator import CodeGenerator
 class CodeAnalyzerApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("AA Language")
+        self.root.title("Code Analyzer")
 
         # Apply a light theme
         self.root.set_theme('clearlooks')
 
-        # Create a PanedWindow to hold sidebar and main content
-        self.paned_window = tk.PanedWindow(self.root, orient=tk.HORIZONTAL)
-        self.paned_window.pack(fill=tk.BOTH, expand=True)
+        # Create header frame
+        self.header_frame = ttk.Frame(self.root, padding="10 10 10 10")
+        self.header_frame.pack(fill=tk.X)
+        self.header_label = ttk.Label(self.header_frame, text="Python Code Analyzer", font=("Helvetica", 16))
+        self.header_label.pack()
+
+        # Create a main frame with a horizontal paned window
+        self.main_frame = ttk.PanedWindow(self.root, orient=tk.HORIZONTAL)
+        self.main_frame.pack(fill=tk.BOTH, expand=True)
 
         # Create sidebar frame
-        self.sidebar_frame = ttk.Frame(self.paned_window, padding="10 10 10 10")
-        self.paned_window.add(self.sidebar_frame)
-
-        # Create main content frame
-        self.main_frame = ttk.Frame(self.paned_window, padding="10 10 10 10")
-        self.paned_window.add(self.main_frame)
+        self.sidebar_frame = ttk.Frame(self.main_frame, padding="10 10 10 10")
+        self.main_frame.add(self.sidebar_frame, weight=1)
 
         # Sidebar buttons
-        self.run_button = ttk.Button(self.sidebar_frame, text="Run code", command=self.run_analysis)
+        self.run_button = ttk.Button(self.sidebar_frame, text="Run Analysis", command=self.run_analysis)
         self.run_button.pack(pady=5, fill=tk.X)
 
-        self.tokens_button = ttk.Button(self.sidebar_frame, text="Tokens", command=self.show_tokens)
+        self.tokens_button = ttk.Button(self.sidebar_frame, text="Show Tokens", command=self.show_tokens)
         self.tokens_button.pack(pady=5, fill=tk.X)
 
-        self.symbol_table_button = ttk.Button(self.sidebar_frame, text="Symbol Table", command=self.show_symbol_table)
+        self.symbol_table_button = ttk.Button(self.sidebar_frame, text="Show Symbol Table", command=self.show_symbol_table)
         self.symbol_table_button.pack(pady=5, fill=tk.X)
 
-        # Code editor label and text widget
-        self.code_editor_label = ttk.Label(self.main_frame, text="Write Code")
+        # Create a vertical paned window for the main content area
+        self.content_paned_window = ttk.PanedWindow(self.main_frame, orient=tk.VERTICAL)
+        self.main_frame.add(self.content_paned_window, weight=4)
+
+        # Code editor frame
+        self.editor_frame = ttk.Frame(self.content_paned_window, padding="10 10 10 10")
+        self.content_paned_window.add(self.editor_frame, weight=3)
+        
+        self.code_editor_label = ttk.Label(self.editor_frame, text="Code Editor")
         self.code_editor_label.pack(anchor='w', pady=5)
 
-        self.code_editor = scrolledtext.ScrolledText(self.main_frame, wrap=tk.WORD, width=80, height=20, background='#ffffff', foreground='#000000', insertbackground='black')
+        self.code_editor = scrolledtext.ScrolledText(self.editor_frame, wrap=tk.WORD, width=80, height=20, background='#ffffff', foreground='#000000', insertbackground='black')
         self.code_editor.pack(fill=tk.BOTH, expand=True, pady=5)
 
-        # Results display label and text widget
-        self.results_display_label = ttk.Label(self.main_frame, text="Output")
+        # Output display frame
+        self.output_frame = ttk.Frame(self.content_paned_window, padding="10 10 10 10")
+        self.content_paned_window.add(self.output_frame, weight=2)
+        
+        self.results_display_label = ttk.Label(self.output_frame, text="Output")
         self.results_display_label.pack(anchor='w', pady=5)
 
-        self.results_display = scrolledtext.ScrolledText(self.main_frame, wrap=tk.WORD, width=40, height=10, background='#ffffff', foreground='#000000', insertbackground='black')
+        self.results_display = scrolledtext.ScrolledText(self.output_frame, wrap=tk.WORD, width=80, height=20, background='#ffffff', foreground='#000000', insertbackground='black')
         self.results_display.pack(fill=tk.BOTH, expand=True, pady=5)
 
     def run_analysis(self):
@@ -230,7 +375,7 @@ class CodeAnalyzerApp:
         symbol_table = build_symbol_table(tokens)
 
         symbol_table_window = tk.Toplevel(self.root)
-        symbol_table_window.title("A Language Symbol Table window")
+        symbol_table_window.title("Symbol Table")
         columns = ('Lexeme', 'Token Type', 'Data Type', 'Line Number', 'Value')
         tree = ttk.Treeview(symbol_table_window, columns=columns, show='headings')
         for col in columns:

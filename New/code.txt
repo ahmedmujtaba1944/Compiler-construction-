@@ -15,3 +15,10 @@ repeat(integer i = 0! i <= 10! i++)
 {
     show_out = "CC"!
 }
+
+line uni_name = "riphah International University" 
+integer i = 0!
+rotate(i >= 20){
+   uni_name!
+   i = i + 1!
+}

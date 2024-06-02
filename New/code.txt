@@ -1,17 +1,17 @@
-integer $my_age = 10!
-line $show_out = ""!
-iif $my_age > 18{
-   $show_out = "you are eligible for CNIC"!
+integer my_age = 10!
+line show_out = ""!
+iif my_age > 18{
+   show_out = "you are eligible for CNIC"!
 }
-otherwise $my_age > 60{
-   $show_out = "you are 60 plus"!
+otherwise my_age > 60{
+   show_out = "you are 60 plus"
 }
 then {
-   $show_out = "you are not eligible"!
+   show_out = "you are not eligible"!
 }
 
 
-repeat(integer $i = 0! $i <= 10! $i++)
+repeat(integer i = 0! i <= 10! i++)
 {
-    $show_out = "CC"!
+    show_out = "CC"!
 }

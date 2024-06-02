@@ -5,7 +5,7 @@ token_types = {
     'KEYWORD': r'\b(?:iif|otherwise|then|repeat|rotate|Blank|resume|stop|null)\b',
     'DATA_TYPE': r'\b(?:integer|decimal|line|flag|single)\b',
     'OPERATOR': r'(?:<=|>=|==|!=|\+\+|\-\-|\+|\-|\*|/|<|>|%)',
-    'Identifier': r'\$[_a-zA-Z][_a-zA-Z0-9]*',
+    'Identifier': r'[_a-zA-Z][_a-zA-Z0-9]*',
     'PROCEDURE': r'\b(?:repeat|rotate)\b',
     'CONSTANT': r'(?:\".*?\"|\'.*?\')',
     'LITERAL': r'\b(?:yes|no|\d+\.\d*|\d+)\b',

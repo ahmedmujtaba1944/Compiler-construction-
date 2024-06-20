@@ -1,6 +1,6 @@
 integer my_age = 10!
 line show_out = ""!
-iif my_age > 18{
+iff my_age > 18{
    show_out = "you are eligible for CNIC"!
 }
 otherwise my_age > 60{

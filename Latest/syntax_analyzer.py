@@ -44,7 +44,7 @@ class Parser:
         elif self.current_token[0] == 'DATA_TYPE':
             self.declaration()
         elif self.current_token[0] == 'KEYWORD':
-            if self.current_token[1] in ['iif', 'otherwise', 'then']:
+            if self.current_token[1] in ['iff', 'otherwise', 'then']:
                 self.conditional_statement()
             elif self.current_token[1] in ['repeat', 'rotate']:
                 self.loop_statement()
@@ -110,7 +110,7 @@ class Parser:
         self.expression()
 
     def conditional_statement(self):
-        if self.current_token[1] == 'iif':
+        if self.current_token[1] == 'iff':
             self.match('KEYWORD')
             self.condition()
             self.block()

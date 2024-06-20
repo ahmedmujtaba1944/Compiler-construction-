@@ -4,16 +4,16 @@ line remarks = "Need to improve"!
 single grade = 'C'!
 flag passed = yes!
 
-iff(marks >= 50){
+iff marks >= 50{
 remarks = "Passed With Grade D"!
 }
-otherwise(marks >= 60){
+otherwise marks >= 60{
 remarks = "Passed With Grade C"!
 }
-otherwise(marks >= 70){
+otherwise marks >= 70{
 remarks = "Passed With Grade B"!
 }
-otherwise(marks >= 80){
+otherwise marks >= 80{
 remarks = "Passed With Grade A"!
 }
 then{

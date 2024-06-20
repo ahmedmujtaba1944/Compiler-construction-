@@ -31,7 +31,7 @@ class CodeGenerator:
         elif self.current_token[0] == 'DATA_TYPE':
             self.declaration()
         elif self.current_token[0] == 'KEYWORD':
-            if self.current_token[1] in ['iif', 'otherwise', 'then']:
+            if self.current_token[1] in ['iff', 'otherwise', 'then']:
                 self.conditional_statement()
             elif self.current_token[1] in ['repeat', 'rotate']:
                 self.loop_statement()
@@ -144,7 +144,7 @@ class CodeGenerator:
         return label
 
     def conditional_statement(self):
-        if self.current_token[1] == 'iif':
+        if self.current_token[1] == 'iff':
             self.advance()
             label = self.condition()
             self.assembly_code.append(f"JMP L{label}")

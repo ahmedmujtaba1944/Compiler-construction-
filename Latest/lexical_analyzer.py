@@ -2,7 +2,7 @@ import re
 
 # Define token types
 token_types = {
-    'KEYWORD': r'\b(?:iif|otherwise|then|repeat|rotate|Blank|resume|stop|null|print|input)\b',
+    'KEYWORD': r'\b(?:iff|otherwise|then|repeat|rotate|Blank|resume|stop|null|print|input)\b',
     'DATA_TYPE': r'\b(?:integer|decimal|line|flag|single)\b',
     'OPERATOR': r'(?:<=|>=|==|!=|\+\+|\-\-|\+|\-|\*|/|<|>|%)',
     'Identifier': r'[a-zA-Z][a-zA-Z0-9]*',

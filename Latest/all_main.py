@@ -53,7 +53,11 @@ def build_symbol_table(tokens):
 
 # Read code from a file
 def read_code_from_file(filename):
+    #Ye tera
     filename = r'G:\University_Study\8th Semester\Compiler-construction\cc-project\Compiler-construction-\Latest\code_file.txt'
+    #Ye mera
+    # filename = r'D:\Study\BScs 8th Semester(Final)\Compiler Construction(CC)\Compiler-construction-\Latest\code_file.txt'
+
     with open(filename, 'r') as file:
         code = file.read()
     return code

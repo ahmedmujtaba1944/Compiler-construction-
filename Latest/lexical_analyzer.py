@@ -2,20 +2,20 @@ import re
 
 # Define token types
 token_types = {
-    'KEYWORD': r'\b(?:iif|ielif|ielse|FR|WH|Zero|cnt|br|null|print|input)\b',
-    'DATA_TYPE': r'\b(?:Num|Fl|Str|Bool|Char)\b',
+    'KEYWORD': r'\b(?:iif|otherwise|then|repeat|rotate|Blank|resume|stop|null|print|input)\b',
+    'DATA_TYPE': r'\b(?:integer|decimal|line|flag|single)\b',
     'OPERATOR': r'(?:<=|>=|==|!=|\+\+|\-\-|\+|\-|\*|/|<|>|%)',
-    'Identifier': r'@[_a-zA-Z][_a-zA-Z0-9]*',
-    'PROCEDURE': r'\b(?:FR|WH)\b',
+    'Identifier': r'[a-zA-Z][a-zA-Z0-9]*',
+    'PROCEDURE': r'\b(?:repeat|rotate)\b',
     'CONSTANT': r'(?:\".*?\"|\'.*?\')',
-    'LITERAL': r'\b(?:true|false|\d+\.\d*|\d+)\b',
+    'LITERAL': r'\b(?:yes|no|\d+\.\d*|\d+)\b',
     'ASSIGN': r'=',
     'LCURLY': r'{',
     'RCURLY': r'}',
     'LPAREN': r'\(',
     'RPAREN': r'\)',
     'SEPERATOR': r'\,',
-    'STATEMENT_END': r'\.',
+    'STATEMENT_END': r'\!',
 }
 
 
@@ -40,7 +40,7 @@ def tokenize(code):
                     if token_type == 'Identifier':
                         prev_token_index = len(tokens) - 1
                         data_type = None  # Default to None
-                        if prev_token_index >= 0 and tokens[prev_token_index][0] == 'DATA_TYPE' or tokens[prev_token_index][1] == 'Zero':
+                        if prev_token_index >= 0 and tokens[prev_token_index][0] == 'DATA_TYPE' or tokens[prev_token_index][1] == 'Blank':
                             data_type = tokens[prev_token_index][1]
                         while position + len(token) < len(line) and line[position + len(token)].isspace():
                             position += 1

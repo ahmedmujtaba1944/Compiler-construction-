@@ -1,0 +1,36 @@
+integer marks = 55!
+decimal percentage = 50.5!
+line remarks = "Need to improve"!
+single grade = 'C'!
+flag passed = yes!
+
+iff(marks >= 50){
+remarks = "Passed With Grade D"!
+}
+otherwise(marks >= 60){
+remarks = "Passed With Grade C"!
+}
+otherwise(marks >= 70){
+remarks = "Passed With Grade B"!
+}
+otherwise(marks >= 80){
+remarks = "Passed With Grade A"!
+}
+then{
+remarks = "Failed"!
+}
+
+rotate(percentage<60){
+percentage = percentage + 1!
+}
+
+repeat(integer a=0! a<10! a++){
+marks = marks + 1!
+}
+
+
+blank add(integer num1, integer num2){
+ integer sum = num1 + num2!
+}
+
+add(10,6)!

@@ -14,7 +14,7 @@ from code_executor import AssemblyInterpreter
 class CodeAnalyzerApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("AlphaLang")
+        self.root.title("A++ Language")
 
         self.root.set_theme('equilux')
 
@@ -39,12 +39,12 @@ class CodeAnalyzerApp:
         self.results_display = scrolledtext.ScrolledText(mainframe, wrap=tk.WORD, width=80, height=5, background='#464646', foreground='#d3d3d3', insertbackground='white')
         self.results_display.grid(row=4, column=0, padx=10, pady=5)
 
-        image = Image.open("run_btn.png")  
-        image = image.resize((25, 25))  
-        self.run_button_image = ImageTk.PhotoImage(image)
+        # image = Image.open("run_btn.png")  
+        # image = image.resize((25, 25))  
+        # self.run_button_image = ImageTk.PhotoImage(image)
 
         # Run button with image
-        self.run_button = ttk.Button(mainframe, text="Run", image=self.run_button_image, compound=tk.RIGHT, command=self.run_analysis)
+        self.run_button = ttk.Button(mainframe, text="Run", compound=tk.RIGHT, command=self.run_analysis)
         self.run_button.grid(row=0, column=0, sticky='e')
         # self.run_button = ttk.Button(mainframe, text="Run", command=self.run_analysis)
         # self.run_button.grid(row=0, column=0, padx=10, pady=10, sticky='e')

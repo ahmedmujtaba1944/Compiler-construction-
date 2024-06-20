@@ -49,6 +49,7 @@ def read_code_from_file(filename):
     return code
 
 code = read_code_from_file(r'G:\University_Study\8th Semester\Compiler-construction\cc-project\Compiler-construction-\Latest\code_file.txt')
+# code = read_code_from_file(r'D:\Study\BScs 8th Semester(Final)\Compiler Construction(CC)\Compiler-construction-\Latest\code_file.txt')
 
 tokens, errors = tokenize(code)
 

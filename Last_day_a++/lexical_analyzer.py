@@ -15,8 +15,8 @@ token_types = {
     'RPAREN': r'\)',
     'SEPERATOR': r'\,',
     'STATEMENT_END': r'\!',
+    'COMMENT': r'@.*',  # Add this line for comments
 }
-
 
 # Create regular expressions for tokenization
 patterns = {token: re.compile(pattern) for token, pattern in token_types.items()}
@@ -32,7 +32,7 @@ def tokenize(code):
                 position += 1
                 continue
             match = None
-            for token_type, pattern in token_types.items():
+            for token_type, pattern in patterns.items():  # Use patterns instead of token_types
                 match = re.match(pattern, line[position:])
                 if match:
                     token = match.group(0)
@@ -47,6 +47,10 @@ def tokenize(code):
                             tokens.append(('FUNCTION', token, line_number, data_type))
                         else:
                             tokens.append(('VARIABLE', token, line_number, data_type))
+                    elif token_type == 'COMMENT':
+                        # Skip the comment
+                        position = len(line)
+                        break
                     else:
                         tokens.append((token_type, token, line_number))
                     position += len(token)
@@ -57,5 +61,3 @@ def tokenize(code):
                 position += 1
 
     return tokens, Errors
-
-

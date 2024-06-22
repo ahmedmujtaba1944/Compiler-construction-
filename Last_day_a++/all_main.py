@@ -55,7 +55,7 @@ def read_code_from_file(filename):
     return code
 
 # Use a raw string or forward slashes for the file path
-file_path = r'G:\University_Study\8th Semester\Compiler-construction\Last_Day\Last_day_a++\code_file.txt'
+file_path = r'G:\University_Study\8th Semester\Compiler-construction\cc-project\Compiler-construction-\Last_day_a++\code_file.txt'
 # Alternatively, you could use forward slashes:
 # file_path = 'G:/University_Study/8th Semester/Compiler-construction/Last_Day/Last_day_a++/code.txt'
 

@@ -182,6 +182,8 @@ class Parser:
         self.match('LPAREN')
         if self.current_token[0] != 'RPAREN':
             self.argument_list()
+        else:
+            self.match('RPAREN')
 
     def function_definition(self):
         if self.current_token[1] == 'Blank':

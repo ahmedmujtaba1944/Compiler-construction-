@@ -1,1 +1,20 @@
-integer age = 1!
+integer num=100!
+line name="Ahmad"!
+
+@condition
+integer marks=50!
+line show=""!
+iff marks>50
+{
+    show="You have passed the exam"!
+}
+
+
+@function
+integer a=10!
+integer b=20!
+Blank add(integer a, integer b)
+{
+integer res = a + b!
+}
+add(a,b)!

@@ -1,0 +1,11 @@
+then{
+    show="You have Failed the Exam"!
+}
+
+integer i=0!
+integer a=1!
+rotate(i<10)
+{
+    a=a+10!
+    i=i+1!
+}

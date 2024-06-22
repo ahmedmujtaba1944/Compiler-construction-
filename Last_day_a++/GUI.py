@@ -41,9 +41,9 @@ class CodeAnalyzerApp:
         self.style.map("Rounded.TButton", background=[('active', '#298096')])
 
         # Buttons on side navbar
-        image = Image.open("run_btn.png")
-        image = image.resize((25, 25))
-        self.run_button_image = ImageTk.PhotoImage(image)
+        # image = Image.open("run_btn.png")
+        # image = image.resize((25, 25))
+        # self.run_button_image = ImageTk.PhotoImage(image)
         button_width = 25  # Width for all buttons
 
         # Add "A++ Compiler" label at the bottom

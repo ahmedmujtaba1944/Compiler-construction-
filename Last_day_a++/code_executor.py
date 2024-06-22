@@ -11,7 +11,6 @@ class AssemblyInterpreter:
         while self.program_counter < len(instructions):
             instruction = instructions[self.program_counter].strip()
             if instruction:
-                # print(f"Executing: {instruction}")  # Debug print for each instruction
                 self._execute_instruction(instruction)
             self.program_counter += 1
 
@@ -24,7 +23,6 @@ class AssemblyInterpreter:
     def _execute_instruction(self, instruction):
         parts = instruction.split()
         if parts[0].endswith(':'):
-            # Skip label definitions
             return
         if parts[0] == 'MOV':
             self._execute_mov(parts[1:])
@@ -75,7 +73,6 @@ class AssemblyInterpreter:
     def _execute_jump(self, jump_type, label):
         if label is None:
             raise ValueError(f"Missing label for jump instruction: {jump_type}")
-           
 
         if jump_type == 'JMP':
             self.program_counter = self.labels[label] - 1
@@ -98,9 +95,16 @@ class AssemblyInterpreter:
     def _execute_call(self, parts):
         function_name, args = parts[0], parts[1:]
         if function_name == 'showout':
+            output = []
             for arg in args:
-                print(self.variables.get(arg.rstrip(','), arg.rstrip(',')), end=' ')
-            print()
+                value = self.variables.get(arg.rstrip(','), arg.rstrip(','))
+                output.append(str(value))
+            self.stack.append(('OUTPUT', " ".join(output)))
+
+    def _execute_showout(self, parts):
+        output = self.stack.pop()
+        if output[0] == 'OUTPUT':
+            print(output[1])
 
     def _evaluate_expression(self, expr):
         tokens = expr.split()
@@ -137,5 +141,3 @@ class AssemblyInterpreter:
         filtered_vars = {key: value for key, value in self.variables.items() if not key.startswith('TMP')}
         print(filtered_vars)
         return filtered_vars
-
-

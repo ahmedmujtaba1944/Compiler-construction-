@@ -7,7 +7,7 @@ token_types = {
     'OPERATOR': r'(?:<=|>=|==|!=|\+\+|\-\-|\+|\-|\*|/|<|>|%)',
     'Identifier': r'[a-zA-Z][a-zA-Z0-9]*',
     'CONSTANT': r'(?:\".*?\"|\'.*?\')',
-    'LITERAL': r'\b(?:true|false|\d+\.\d*|\d+)\b',
+    'LITERAL': r'\b(?:true|false|-?\d+\.\d*|-?\d+)\b',  # Updated regex
     'ASSIGN': r'=',
     'LCURLY': r'{',
     'RCURLY': r'}',

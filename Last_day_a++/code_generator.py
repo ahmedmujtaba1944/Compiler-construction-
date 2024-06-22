@@ -1,4 +1,4 @@
-
+#code_generator.py
 class CodeGenerator:
     def __init__(self, symbol_table, tokens):
         self.tokens = tokens

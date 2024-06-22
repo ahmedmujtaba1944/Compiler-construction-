@@ -1,3 +1,4 @@
+#all_main.py
 import re
 from lexical_analyzer import tokenize
 from syntax_analyzer import Parser

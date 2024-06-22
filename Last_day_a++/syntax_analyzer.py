@@ -1,4 +1,3 @@
-
 class Parser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -65,7 +64,6 @@ class Parser:
         elif self.current_token == None:
             pass
         else:
-            # self.errors.append(f"Syntax error: Unexpected token {self.current_token[1]} at line {self.current_token[2]}")
             self.advance()
 
     def expression(self):
@@ -76,7 +74,6 @@ class Parser:
             self.function_call()
             return True
         else:
-            # self.errors.append(f"Syntax error: Unexpected token {self.current_token[1]} at line {self.current_token[2]}")
             return True
 
     def declaration(self):
@@ -135,7 +132,6 @@ class Parser:
             elif self.current_token[0] == 'VARIABLE':
                 self.match('VARIABLE')
         else:
-            # self.errors.append(f"Syntax error: Unexpected token {self.current_token[1]} at line {self.current_token[2]}")
             pass
 
     def loop_statement(self):
@@ -148,12 +144,14 @@ class Parser:
             self.loop_progression()
             self.match('RPAREN')
             self.block()
+            self.match('RCURLY')  # Ensure closing of block
         elif self.current_token[1] == 'rotate':
             self.match('KEYWORD')
             self.match('LPAREN')
             self.condition()
             self.match('RPAREN')
             self.block()
+            self.match('RCURLY')  # Ensure closing of block
 
     def argument_list(self):
         while self.current_token and self.current_token[0] != 'RPAREN':
@@ -172,7 +170,6 @@ class Parser:
                 if self.current_token[0] != 'RPAREN':
                     self.match('SEPERATOR')
             else:
-                # self.errors.append(f"Syntax error: Unexpected token {self.current_token[1]} at line {self.current_token[2]}")
                 self.advance()
 
         if self.current_token and self.current_token[0] == 'RPAREN':
@@ -218,7 +215,6 @@ class Parser:
             elif self.current_token[0] == 'SEPERATOR':
                 self.match('SEPERATOR')
             else:
-                # self.errors.append(f"Syntax error: Unexpected token {self.current_token[1]} at line {self.current_token[2]}")
                 pass
         self.match('STATEMENT_END')
 

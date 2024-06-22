@@ -1,22 +1,39 @@
+import re
 class SemanticAnalyzer:
     def __init__(self, symbol_table, tokens):
         self.symbol_table = symbol_table
         self.tokens = tokens
-        self.current_token_index = 0
-        self.current_token = self.tokens[self.current_token_index] if self.tokens else None
         self.errors = []
+        self.current_token_index = 0
 
     def analyze(self):
-        self.check_variable_usage()
-        self.check_function_calls()
-        self.check_data_type()
-        self.check_type_compatibility()
-        # if self.errors:
-        #     print("\n\nSemantic Errors")
-        #     for error in self.errors:
-        #         print(error)
-        # else:
-        #     print("No semantic errors were found.")
+        while self.current_token_index < len(self.tokens):
+            token_type, lexeme, line_number, *data_type = self.tokens[self.current_token_index]
+            if token_type == 'ASSIGN':
+                self.check_assignment()
+            self.current_token_index += 1
+
+    def check_assignment(self):
+        variable_token = self.tokens[self.current_token_index - 1]
+        variable_name = variable_token[1]
+        variable_type = self.symbol_table[variable_name]['data_type']
+        value_token = self.tokens[self.current_token_index + 1]
+        value_type = self.get_value_type(value_token[1])
+
+        if variable_type != value_type:
+            self.errors.append(f"Semantic error: Type mismatch on line {variable_token[2]}: cannot assign {value_type} to {variable_type}")
+
+    def get_value_type(self, value):
+        if re.match(r'^-?\d+$', value):
+            return 'integer'
+        elif re.match(r'^-?\d+\.\d*$', value):
+            return 'decimal'
+        elif re.match(r'^".*"$', value):
+            return 'line'
+        elif value in ['true', 'false']:
+            return 'flag'
+        else:
+            return self.symbol_table.get(value, {}).get('data_type', 'unknown')
 
     def check_variable_usage(self):
         for token_type, lexeme, line_number, *data_type in self.tokens:
@@ -159,6 +176,14 @@ class SemanticAnalyzer:
                     else:
                         right_operand_type = None
                 
+                # Check specific operations and their operand types
+                if lexeme in ['-', '/', '*', '%'] and (left_operand_type in ['line', 'flag'] or right_operand_type in ['line', 'flag']):
+                    self.errors.append(f"Semantic error: Cannot perform these operations on non-numeric types at line {line_number}")
+                    continue
+                
+                # Check for type mismatch
+                if left_operand_type != right_operand_type:
+                    self.errors.append(f"Semantic error: Type mismatch in expression at line {line_number}")
                 # Handle cases where type is not defined
                 if left_operand_type is None or right_operand_type is None:
                     self.errors.append(f"Semantic error: Type not defined at line {line_number}")
@@ -175,12 +200,4 @@ class SemanticAnalyzer:
                     self.errors.append(f"Semantic error: Operands must be integer or float types for arithmetic operations at line {line_number}")
                     continue
                 
-                # Check specific operations and their operand types
-                if lexeme in ['-', '/', '*', '%'] and (left_operand_type in ['line', 'flag'] or right_operand_type in ['line', 'flag']):
-                    self.errors.append(f"Semantic error: Cannot perform these operations on non-numeric types at line {line_number}")
-                    continue
-                
-                # Check for type mismatch
-                if left_operand_type != right_operand_type:
-                    self.errors.append(f"Semantic error: Type mismatch in expression at line {line_number}")
 

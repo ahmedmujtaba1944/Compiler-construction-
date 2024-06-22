@@ -167,6 +167,10 @@ class SemanticAnalyzer:
                 # Check if both operands are numeric
                 if left_operand_type in ['decimal', 'integer'] and right_operand_type in ['decimal', 'number']:
                     continue
+                
+                elif left_operand_type in ['integer', 'integer'] and right_operand_type in ['integer', 'number']:
+                    continue                
+                
                 else:
                     self.errors.append(f"Semantic error: Operands must be integer or float types for arithmetic operations at line {line_number}")
                     continue
